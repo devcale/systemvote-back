@@ -34,25 +34,52 @@ This Spring Boot application provides a RESTful API for managing user data, allo
 
 ```cd systemvote-back```
 
-3. Configure the database settings in application.properties and secrets.properties.
+3. Configure the database settings in application.properties.
 
-```
+``` properties
 # application.properties
 spring.config.import=optional:secrets.properties
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 security.jwt.secret-key = <DEFINE YOUR OWN JWT KEY>
 ```
-
-```
+4. Create a file named ```secrets.properties``` on the same folder as application.properties and add:
+``` properties
 # secrets.properties
 spring.datasource.url=jdbc:mysql://<YOUR DB LOCATION>
 spring.datasource.username=<YOUR DB USERNAME>
 spring.datasource.password=<YOUR DB PASSWORD>
 ```
-4. Run the application using your IDE of choice or by using Maven:
+5. Run the application using your IDE of choice or by using Maven:
 ```
 mvn spring-boot:run
 ```
+
+### Database Configuration
+
+1. On a MySQL database of your choice, create a new table with the following script:
+``` SQL
+CREATE TABLE user
+(
+id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+username VARCHAR(50) NOT NULL,
+email VARCHAR(100) NOT NULL,
+password VARCHAR(100) NOT NULL,
+role VARCHAR(50),
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+CHECK (role IN ('ADMIN', 'CUSTOMER', 'GUEST'))
+)
+```
+2. If you want to add some mock data, use the following script:
+``` SQL
+INSERT INTO user (username, email, password, role)
+VALUES
+    ('john_doe', 'john@example.com', 'password123', 'ADMIN'),
+    ('emma_smith', 'emma@example.com', 'pass456', 'CUSTOMER'),
+    ('mike_jones', 'mike@example.com', 'hello789', 'GUEST'),
+    ('sara_wilson', 'sara@example.com', 'saraPass', 'CUSTOMER'),
+    ('alex_brown', 'alex@example.com', 'alexPass', 'ADMIN');
+```
+
 ## Usage
 
 Once the application is running, you can interact with the API using HTTP requests:
@@ -66,7 +93,7 @@ Once the application is running, you can interact with the API using HTTP reques
 
 **Registration Body**
 
-```
+``` JSON
 {
 	"username": "john_doe",
 	"email": "john_doe@example.com",
@@ -81,21 +108,27 @@ Once the application is running, you can interact with the API using HTTP reques
 
 **Login Body**
 
-```
+``` JSON
 {
 	"username": "john_doe",
 	"password": "password123f"
 }
 ```
 
+**Login Response**
+
+``` 
+	Token:eyJ0eXAiOiJKV1QiLCJhbGc...
+```
+
 ### CRUD Operations
 > CRUD Operations are only available to Users who have already signed in, and provide the authentication bearer token.
 
     GET /api/user
-        Retrieve the list of registered users.
+        Retrieve the list of registered users. Password is not shown for obvious security reasons.
 
     GET /api/user/{id}
-        Retrieve details of a specific user by ID.
+        Retrieve details of a specific user by ID. Password is not shown for obvious security reasons.
 
     PUT /api/user/{id}
         Update user information by providing updated details in the request body.
