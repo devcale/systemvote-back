@@ -22,10 +22,17 @@ public class UserDAO implements IUserDAO{
         return query.getResultList();
     }
 
+    public User getByUsername(String username) {
+        Session currentSession = entityManager.unwrap(Session.class);
+        return (User) currentSession.createQuery("FROM User WHERE username = :username", User.class).setParameter("username", username).uniqueResult();
+    }
+
     public User getById(int id) {
         Session currentSession = entityManager.unwrap(Session.class);
         return currentSession.get(User.class, id);
     }
+
+
 
     @Override
     public void save(User user) {

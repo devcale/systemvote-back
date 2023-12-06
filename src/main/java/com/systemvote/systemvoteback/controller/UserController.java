@@ -1,5 +1,6 @@
 package com.systemvote.systemvoteback.controller;
 
+import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.systemvote.systemvoteback.dto.UserDTO;
 import com.systemvote.systemvoteback.model.User;
 import com.systemvote.systemvoteback.service.IUserService;
@@ -16,21 +17,38 @@ public class UserController {
     @Autowired
     private IUserService userService;
 
+
+
     @GetMapping("/user/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable Integer id)
     {
         UserDTO user =  userService.getById(id);
-        if(user != null)
+
+        try
         {
-            return ResponseEntity.ok((UserDTO) user);
+            if(user != null)
+            {
+                return ResponseEntity.ok((UserDTO) user);
+            }
+        }catch (Exception e)
+        {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
+
+
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     @GetMapping("/user")
     public ResponseEntity<List<UserDTO>> getUsers()
     {
-        return ResponseEntity.ok(userService.getAll());
+        try{
+            return ResponseEntity.ok(userService.getAll());
+        } catch (Exception e)
+        {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
     }
 
     @PostMapping("/user")

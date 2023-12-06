@@ -34,6 +34,17 @@ public class UserService implements IUserService{
         return modelMapper.map(user, UserDTO.class);
     }
 
+    @Override
+    public UserDTO getByUsername(String username) {
+        User user = userDAO.getByUsername(username);
+        if(user == null)
+        {
+            return  null;
+        }
+
+        return modelMapper.map(user, UserDTO.class);
+    }
+
     @Transactional
     public List<UserDTO> getAll() {
 
@@ -49,6 +60,8 @@ public class UserService implements IUserService{
         return userDTOs;
 
     }
+
+
 
 
     @Transactional
@@ -67,6 +80,11 @@ public class UserService implements IUserService{
     @Override
     public void delete(int id) {
         userDAO.delete(id);
+    }
+
+    @Override
+    public String getRole(int id) {
+        return null;
     }
 
     public String toHash(String stringToHash)

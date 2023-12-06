@@ -8,6 +8,7 @@ import java.util.List;
 public interface IUserService {
     List<UserDTO> getAll();
 
+    UserDTO getByUsername(String username);
     UserDTO getById(int id);
 
     void create(User user);
@@ -15,4 +16,6 @@ public interface IUserService {
     User update(User user);
 
     void delete(int id);
+
+    String getRole(int id);
 }
