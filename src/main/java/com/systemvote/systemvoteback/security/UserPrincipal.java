@@ -9,17 +9,20 @@ public class UserPrincipal implements UserDetails {
 
     private int id;
     private String username;
+    private String password;
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserPrincipal(int id, String username, Collection<? extends GrantedAuthority> authorities) {
+    public UserPrincipal(int id, String username, String password, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.username = username;
+        this.password = password;
         this.authorities = authorities;
     }
 
     public int getId() {
         return id;
     }
+
 
 
     @Override
@@ -29,7 +32,7 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public String getPassword() {
-        return null;
+        return password;
     }
 
     @Override

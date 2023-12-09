@@ -5,6 +5,7 @@ import com.systemvote.systemvoteback.model.User;
 import com.systemvote.systemvoteback.repository.UserDAO;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,8 @@ public class UserService implements IUserService{
     @Autowired
     private ModelMapper modelMapper;
 
+    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
 
     @Transactional
     public UserDTO getById(int id) {
@@ -35,7 +38,7 @@ public class UserService implements IUserService{
     }
 
     @Override
-    public UserDTO getByUsername(String username) {
+    public UserDTO getDTOByUsername(String username) {
         User user = userDAO.getByUsername(username);
         if(user == null)
         {
@@ -43,6 +46,11 @@ public class UserService implements IUserService{
         }
 
         return modelMapper.map(user, UserDTO.class);
+    }
+
+    @Override
+    public User getByUsername(String username) {
+        return userDAO.getByUsername(username);
     }
 
     @Transactional
@@ -66,13 +74,13 @@ public class UserService implements IUserService{
 
     @Transactional
     public void create(User user) {
-        user.setPassword(toHash(user.getPassword()));
+        user.setPassword(encoder.encode(user.getPassword()));
         userDAO.save(user);
     }
 
     @Transactional
     public User update(User user) {
-        user.setPassword(toHash(user.getPassword()));
+        user.setPassword(encoder.encode(user.getPassword()));
         return userDAO.update(user);
     }
 
@@ -87,23 +95,5 @@ public class UserService implements IUserService{
         return null;
     }
 
-    public String toHash(String stringToHash)
-    {
-        try{
-            MessageDigest md = MessageDigest.getInstance("SHA256");
-            md.update(stringToHash.getBytes());
-            byte[] result = md.digest();
-            StringBuilder sb = new StringBuilder();
-            for(byte b : result)
-            {
-                sb.append(String.format("%02x",b));
-            }
 
-            return sb.toString();
-        } catch (NoSuchAlgorithmException e)
-        {
-            return "No such algo";
-        }
-
-    }
 }

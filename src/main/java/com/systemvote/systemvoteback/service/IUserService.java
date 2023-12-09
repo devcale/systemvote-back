@@ -8,7 +8,9 @@ import java.util.List;
 public interface IUserService {
     List<UserDTO> getAll();
 
-    UserDTO getByUsername(String username);
+    UserDTO getDTOByUsername(String username);
+
+    User getByUsername(String username);
     UserDTO getById(int id);
 
     void create(User user);

@@ -15,13 +15,38 @@ public class JwtIssuer {
 
     @Autowired
     private JwtProperties properties;
-    public String issue(int userId, String email, List<String> roles){
+    public String issue(Request request){
         return JWT.create()
-                .withSubject(String.valueOf(userId))
+                .withSubject(String.valueOf(request.getUserId()))
                 .withExpiresAt(Instant.now().plus(Duration.of(1, ChronoUnit.DAYS)))
-                .withClaim("e", email)
-                .withClaim("a", roles)
+                .withClaim("e", request.getEmail())
+                .withClaim("a", request.getRoles())
                 .sign(Algorithm.HMAC256(properties.getSecretKey()));
 
+    }
+
+
+    public static class Request {
+        private final int userId;
+        private final String email;
+        private final List<String> roles;
+
+        public Request(int userId, String email, List<String> roles) {
+            this.userId = userId;
+            this.email = email;
+            this.roles = roles;
+        }
+
+        public int getUserId() {
+            return userId;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public List<String> getRoles() {
+            return roles;
+        }
     }
 }

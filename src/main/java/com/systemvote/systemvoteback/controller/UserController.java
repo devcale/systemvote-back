@@ -3,10 +3,12 @@ package com.systemvote.systemvoteback.controller;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.systemvote.systemvoteback.dto.UserDTO;
 import com.systemvote.systemvoteback.model.User;
+import com.systemvote.systemvoteback.security.UserPrincipal;
 import com.systemvote.systemvoteback.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,10 +22,9 @@ public class UserController {
 
 
     @GetMapping("/user/{id}")
-    public ResponseEntity<UserDTO> getUserById(@PathVariable Integer id)
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Integer id, @AuthenticationPrincipal UserPrincipal principal)
     {
         UserDTO user =  userService.getById(id);
-
         try
         {
             if(user != null)
